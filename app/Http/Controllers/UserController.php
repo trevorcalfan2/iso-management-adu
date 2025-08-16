@@ -31,6 +31,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'roles' => 'required|array',  // Verifica que los roles sean proporcionados
         ]);
 
         // Crear usuario
@@ -60,16 +61,23 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => 'nullable|string|min:8|confirmed',  // Contraseña opcional
+            'roles' => 'required|array',  // Verifica que los roles sean proporcionados
         ]);
 
-        // Actualizar usuario
+        // Buscar el usuario
         $user = User::findOrFail($id);
-        $user->update([
+
+        // Actualizar datos del usuario
+        $user->fill([
             'name' => $request->name,
             'email' => $request->email,
+            // Si se proporciona una nueva contraseña, se hashea y se actualiza
             'password' => $request->password ? Hash::make($request->password) : $user->password,
         ]);
+
+        // Guardar el usuario
+        $user->save();
 
         // Actualizar roles
         $user->roles()->sync($request->roles);

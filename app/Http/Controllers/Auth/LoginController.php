@@ -1,11 +1,11 @@
 <?php
 
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;  // Añadido para manejar la verificación de la contraseña manualmente (opcional)
 
 class LoginController extends Controller
 {
@@ -23,11 +23,16 @@ class LoginController extends Controller
         ]);
 
         // Intentar autenticar al usuario
-        if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->intended('/dashboard');
+        $credentials = $request->only('email', 'password');
+
+        // Si las credenciales no coinciden
+        if (Auth::attempt($credentials)) {
+            return redirect()->intended('/dashboard'); // Redirige al dashboard si es exitoso
         }
 
         // Si no se autentica, redirige con error
-        return back()->withErrors(['email' => 'Las credenciales no coinciden.']);
+        return back()->withErrors([
+            'email' => 'Las credenciales no coinciden.',
+        ]);
     }
 }
