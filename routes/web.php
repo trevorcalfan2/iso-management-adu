@@ -12,6 +12,33 @@ use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\ISOVersionController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
+// Mostrar formulario para solicitar el link de restablecimiento
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])
+    ->name('password.request');
+
+// Enviar email con el link
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->name('password.email');
+
+// Mostrar formulario para restablecer contraseña usando token
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->name('password.reset');
+
+// Procesar el cambio de contraseña
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])
+    ->name('password.update');
+
+
+
+
+
+
+
+
+
 
 // Rutas de configuración del sistema (solo para administradores)
 Route::middleware('auth')->prefix('admin')->group(function () {
